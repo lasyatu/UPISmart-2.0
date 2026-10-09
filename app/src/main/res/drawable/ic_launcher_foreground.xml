@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Mascot Ears -->
+    <!-- Left Ear -->
+    <path
+        android:fillColor="#EAEAF6"
+        android:pathData="M38,34 C35,26 40,22 44,28 Z" />
+    <path
+        android:fillColor="#B7A0FF"
+        android:pathData="M39,32 C37,28 40,25 43,29 Z" />
+
+    <!-- Right Ear -->
+    <path
+        android:fillColor="#EAEAF6"
+        android:pathData="M70,34 C73,26 68,22 64,28 Z" />
+    <path
+        android:fillColor="#B7A0FF"
+        android:pathData="M69,32 C71,28 68,25 65,29 Z" />
+
+    <!-- Mascot Body & Head (White plump cute silhouette) -->
+    <path
+        android:pathData="M54,26 C36,26 31,40 31,56 C31,73 39,82 54,82 C69,82 77,73 77,56 C77,40 72,26 54,26 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="54"
+                android:startY="26"
+                android:endX="54"
+                android:endY="82"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#FFFFFF" />
+                <item android:offset="0.85" android:color="#F4F4FD" />
+                <item android:offset="1.0" android:color="#E3E1F5" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Eyes (Happy smiling winks) -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#1F1B38"
+        android:strokeWidth="2.8"
+        android:strokeLineCap="round"
+        android:pathData="M43,45 C45,41 49,41 51,45" />
+
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#1F1B38"
+        android:strokeWidth="2.8"
+        android:strokeLineCap="round"
+        android:pathData="M57,45 C59,41 63,41 65,45" />
+
+    <!-- Rosy Cheek Blush -->
+    <path
+        android:fillColor="#40FF8EC7"
+        android:pathData="M40,50 m-3.5,0 a3.5,2 0 1,0 7,0 a3.5,2 0 1,0 -7,0" />
+
+    <path
+        android:fillColor="#40FF8EC7"
+        android:pathData="M68,50 m-3.5,0 a3.5,2 0 1,0 7,0 a3.5,2 0 1,0 -7,0" />
+
+    <!-- Cute Smiling Mouth -->
+    <path
+        android:fillColor="#FF70A6"
+        android:strokeColor="#1F1B38"
+        android:strokeWidth="1.2"
+        android:strokeLineCap="round"
+        android:pathData="M51,49 Q54,55 57,49 Z" />
+
+    <!-- Lavender Rupee Card held by mascot -->
+    <path
+        android:fillColor="#22000000"
+        android:pathData="M37,59 L71,59 A3,3 0 0,1 74,62 L74,78 A3,3 0 0,1 71,81 L37,81 A3,3 0 0,1 34,78 L34,62 A3,3 0 0,1 37,59 Z" />
+
+    <path
+        android:pathData="M38,57 L70,57 A3.5,3.5 0 0,1 73.5,60.5 L73.5,76.5 A3.5,3.5 0 0,1 70,80 L38,80 A3.5,3.5 0 0,1 34.5,76.5 L34.5,60.5 A3.5,3.5 0 0,1 38,57 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="34"
+                android:startY="57"
+                android:endX="74"
+                android:endY="80"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#C4B0FF" />
+                <item android:offset="0.5" android:color="#A587FA" />
+                <item android:offset="1.0" android:color="#805BEB" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#50FFFFFF"
+        android:strokeWidth="0.8"
+        android:pathData="M38,57 L70,57 A3.5,3.5 0 0,1 73.5,60.5 L73.5,76.5 A3.5,3.5 0 0,1 70,80 L38,80 A3.5,3.5 0 0,1 34.5,76.5 L34.5,60.5 A3.5,3.5 0 0,1 38,57 Z" />
+
+    <!-- Chip on Card (Lime Accent) -->
+    <path
+        android:fillColor="#C5FF65"
+        android:pathData="M38,62 L43,62 A1,1 0 0,1 44,63 L44,67 A1,1 0 0,1 43,68 L38,68 A1,1 0 0,1 37,67 L37,63 A1,1 0 0,1 38,62 Z" />
+
+    <!-- Rupee Symbol on Card (Soft Lime Accent) -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#C5FF65"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M52,62.5 L61,62.5" />
+
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#C5FF65"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M52,65.5 L59.5,65.5" />
+
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#C5FF65"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M54.5,62.5 L54.5,68.5 C57.5,68.5 59.5,67 58.5,65.5 C57.5,64 54.5,65 54.5,68.5 L60.5,75" />
+
+    <!-- Mascot Hands/Paws holding the card -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#DEDDF5"
+        android:strokeWidth="0.8"
+        android:pathData="M34,65 C32,65 31,68 33,71 C35,74 38,73 38,70 C38,67 36,65 34,65 Z" />
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#DEDDF5"
+        android:strokeWidth="0.8"
+        android:pathData="M74,65 C76,65 77,68 75,71 C73,74 70,73 70,70 C70,67 72,65 74,65 Z" />
+
+    <!-- Magic Sparkles (Lime & Purple) -->
+    <path
+        android:fillColor="#C5FF65"
+        android:pathData="M27,38 L28.2,40.8 L31,42 L28.2,43.2 L27,46 L25.8,43.2 L23,42 L25.8,40.8 Z" />
+
+    <path
+        android:fillColor="#B7A0FF"
+        android:pathData="M79,32 L80,34.5 L82.5,35.5 L80,36.5 L79,39 L78,36.5 L75.5,35.5 L78,34.5 Z" />
+</vector>

@@ -1,0 +1,6 @@
+{
+  "name": "UPISmart 2.0",
+  "description": "Personal Money OS with Safe-to-Spend budgeting, native QR Scan & Pay, Bills Radar, Savings Missions, Biometric Auth and explainable Spending Detective.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
