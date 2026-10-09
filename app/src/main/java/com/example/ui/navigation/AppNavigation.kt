@@ -78,6 +78,10 @@ fun AppNavigation(
     val recurring by viewModel.recurring.collectAsStateWithLifecycle()
     val alerts by viewModel.spendingAlerts.collectAsStateWithLifecycle()
     val scanPayState by viewModel.scanPayState.collectAsStateWithLifecycle()
+    val vaultReserve by viewModel.vaultReserve.collectAsStateWithLifecycle()
+    val isVaultLocked by viewModel.isVaultLocked.collectAsStateWithLifecycle()
+    val vaultAuditLogs by viewModel.vaultAuditLogs.collectAsStateWithLifecycle()
+    val vaultErrorMessage by viewModel.vaultErrorMessage.collectAsStateWithLifecycle()
 
     // Back button handling
     BackHandler(enabled = currentTab != Screen.Home.route) {
@@ -162,7 +166,15 @@ fun AppNavigation(
                                 viewModel.addRecurringTransaction(payee, upi, amt, cat, freq, due, note)
                             },
                             onToggleRecurringActive = { r -> viewModel.toggleRecurringActive(r) },
-                            onDeleteRecurring = { r -> viewModel.deleteRecurringTransaction(r) }
+                            onDeleteRecurring = { r -> viewModel.deleteRecurringTransaction(r) },
+                            vaultReserve = vaultReserve,
+                            isVaultLocked = isVaultLocked,
+                            vaultAuditLogs = vaultAuditLogs,
+                            vaultErrorMessage = vaultErrorMessage,
+                            onDepositVault = { amt -> viewModel.depositToVault(amt) },
+                            onWithdrawVault = { amt, pin -> viewModel.withdrawFromVault(amt, pin) },
+                            onUnlockVault = { pin -> viewModel.unlockVault(pin) },
+                            onClearVaultError = { viewModel.clearVaultError() }
                         )
                     }
 

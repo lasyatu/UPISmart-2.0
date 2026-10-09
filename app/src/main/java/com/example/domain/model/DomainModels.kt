@@ -58,5 +58,7 @@ data class FinancialSummary(
     val unreservedBalance: Double,
     val remainingDaysInMonth: Int,
     val safeToSpendPerDay: Double,
-    val budgetUtilizationPercentage: Double
+    val budgetUtilizationPercentage: Double,
+    val percentageRemaining: Double = if (monthlyBudget > 0.0) maxOf(0.0, 100.0 - budgetUtilizationPercentage) else 0.0,
+    val isOverBudget: Boolean = totalSpentThisMonth > monthlyBudget
 )

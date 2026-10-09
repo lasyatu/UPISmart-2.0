@@ -27,9 +27,12 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EventRepeat
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.Savings
+import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Warning
+import com.example.core.model.VaultAuditLog
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -103,14 +106,25 @@ fun MissionsAndBillsScreen(
     onAddRecurring: (String, String, Double, String, String, Long, String) -> Unit,
     onToggleRecurringActive: (RecurringTransactionEntity) -> Unit,
     onDeleteRecurring: (RecurringTransactionEntity) -> Unit,
+    vaultReserve: Double = 15000.0,
+    isVaultLocked: Boolean = false,
+    vaultAuditLogs: List<VaultAuditLog> = emptyList(),
+    vaultErrorMessage: String? = null,
+    onDepositVault: (Double) -> Boolean = { true },
+    onWithdrawVault: (Double, String) -> Boolean = { _, _ -> true },
+    onUnlockVault: (String) -> Boolean = { true },
+    onClearVaultError: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    var selectedTab by remember { mutableIntStateOf(0) } // 0: Missions, 1: Bills & Recurring
+    var selectedTab by remember { mutableIntStateOf(0) } // 0: Missions, 1: Emergency Vault, 2: Bills & Recurring
 
     var showAddGoalDialog by remember { mutableStateOf(false) }
     var showAddBillDialog by remember { mutableStateOf(false) }
     var showAddRecurringDialog by remember { mutableStateOf(false) }
     var goalToContribute by remember { mutableStateOf<SavingsGoalEntity?>(null) }
+    var showDepositVaultDialog by remember { mutableStateOf(false) }
+    var showWithdrawVaultDialog by remember { mutableStateOf(false) }
+    var showUnlockVaultDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -135,7 +149,7 @@ fun MissionsAndBillsScreen(
                 onClick = { selectedTab = 0 },
                 text = {
                     Text(
-                        text = "Money Missions (${goals.size})",
+                        text = "Missions (${goals.size})",
                         fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Medium
                     )
                 }
@@ -145,8 +159,18 @@ fun MissionsAndBillsScreen(
                 onClick = { selectedTab = 1 },
                 text = {
                     Text(
-                        text = "Bills Radar (${bills.size})",
+                        text = "Vault Lock",
                         fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Medium
+                    )
+                }
+            )
+            Tab(
+                selected = selectedTab == 2,
+                onClick = { selectedTab = 2 },
+                text = {
+                    Text(
+                        text = "Bills (${bills.size})",
+                        fontWeight = if (selectedTab == 2) FontWeight.Bold else FontWeight.Medium
                     )
                 }
             )
@@ -210,6 +234,174 @@ fun MissionsAndBillsScreen(
                             onContributeClick = { goalToContribute = goal },
                             onDeleteClick = { onDeleteGoal(goal) }
                         )
+                    }
+                }
+            }
+        } else if (selectedTab == 1) {
+            // TAB 1: Emergency Vault Lock
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 88.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                // Emergency Reserve Banner
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().testTag("emergency_vault_card"),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = FintechCard),
+                        border = CardDefaults.outlinedCardBorder().copy(
+                            brush = androidx.compose.ui.graphics.SolidColor(
+                                if (isVaultLocked) FintechDanger.copy(alpha = 0.6f) else FintechCyan.copy(alpha = 0.5f)
+                            )
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth().padding(18.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        imageVector = if (isVaultLocked) Icons.Default.Lock else Icons.Default.Shield,
+                                        contentDescription = "Vault Icon",
+                                        tint = if (isVaultLocked) FintechDanger else FintechCyan,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "EMERGENCY VAULT LOCK",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = if (isVaultLocked) FintechDanger else FintechCyan,
+                                        fontWeight = FontWeight.Bold,
+                                        letterSpacing = 1.sp
+                                    )
+                                }
+
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(if (isVaultLocked) FintechDanger.copy(alpha = 0.2f) else FintechSuccess.copy(alpha = 0.2f))
+                                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                                ) {
+                                    Text(
+                                        text = if (isVaultLocked) "LOCKED" else "RESERVE ACTIVE",
+                                        color = if (isVaultLocked) FintechDanger else FintechSuccess,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(14.dp))
+
+                            Text(
+                                text = FinancialEngine.formatInr(vaultReserve, includeDecimals = true),
+                                style = MaterialTheme.typography.displayMedium,
+                                color = FintechTextPrimary,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            Text(
+                                text = "Separately tracked emergency reserve. Isolated from daily Safe-to-Spend calculations to prevent accidental depletion.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = FintechTextSecondary,
+                                fontSize = 12.sp,
+                                lineHeight = 18.sp
+                            )
+
+                            if (vaultErrorMessage != null) {
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .background(FintechDanger.copy(alpha = 0.15f))
+                                        .border(1.dp, FintechDanger.copy(alpha = 0.5f), RoundedCornerShape(10.dp))
+                                        .padding(10.dp)
+                                ) {
+                                    Text(
+                                        text = vaultErrorMessage,
+                                        color = FintechDanger,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontSize = 11.sp
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                Button(
+                                    onClick = { showDepositVaultDialog = true },
+                                    modifier = Modifier.weight(1f).height(44.dp).testTag("vault_deposit_button"),
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = FintechCyan)
+                                ) {
+                                    Icon(Icons.Default.Add, contentDescription = "Deposit", tint = Color.Black, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text("Deposit", color = Color.Black, fontWeight = FontWeight.Bold)
+                                }
+
+                                Button(
+                                    onClick = {
+                                        if (isVaultLocked) {
+                                            showUnlockVaultDialog = true
+                                        } else {
+                                            showWithdrawVaultDialog = true
+                                        }
+                                    },
+                                    modifier = Modifier.weight(1f).height(44.dp).testTag("vault_withdraw_button"),
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = FintechSurfaceVariant)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Lock,
+                                        contentDescription = "Action",
+                                        tint = FintechTextPrimary,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = if (isVaultLocked) "Unlock Vault" else "Withdraw",
+                                        color = FintechTextPrimary,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Audit Logs Section
+                item {
+                    Text(
+                        text = "Vault Security Audit Trail",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = FintechTextPrimary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                if (vaultAuditLogs.isEmpty()) {
+                    item {
+                        Text(
+                            text = "No audit log entries recorded yet.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = FintechTextSecondary
+                        )
+                    }
+                } else {
+                    items(vaultAuditLogs) { log ->
+                        VaultAuditLogRow(log = log)
                     }
                 }
             }
@@ -393,6 +585,39 @@ fun MissionsAndBillsScreen(
                 onConfirm = { payee, upi, amt, cat, freq, due, note ->
                     showAddRecurringDialog = false
                     onAddRecurring(payee, upi, amt, cat, freq, due, note)
+                }
+            )
+        }
+
+        // Vault Deposit Dialog
+        if (showDepositVaultDialog) {
+            DepositVaultDialog(
+                onDismiss = { showDepositVaultDialog = false },
+                onConfirm = { amount ->
+                    showDepositVaultDialog = false
+                    onDepositVault(amount)
+                }
+            )
+        }
+
+        // Vault Withdraw Dialog
+        if (showWithdrawVaultDialog) {
+            WithdrawVaultDialog(
+                onDismiss = { showWithdrawVaultDialog = false },
+                onConfirm = { amount, pin ->
+                    showWithdrawVaultDialog = false
+                    onWithdrawVault(amount, pin)
+                }
+            )
+        }
+
+        // Vault Unlock Dialog
+        if (showUnlockVaultDialog) {
+            UnlockVaultDialog(
+                onDismiss = { showUnlockVaultDialog = false },
+                onConfirm = { pin ->
+                    showUnlockVaultDialog = false
+                    onUnlockVault(pin)
                 }
             )
         }
@@ -892,6 +1117,214 @@ private fun AddRecurringDialog(
                 colors = ButtonDefaults.buttonColors(containerColor = FintechNeonLime)
             ) {
                 Text("Schedule Recurring", color = FintechNeonLimeDark, fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel", color = FintechTextSecondary) }
+        },
+        containerColor = FintechCard
+    )
+}
+
+@Composable
+private fun VaultAuditLogRow(log: VaultAuditLog) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = FintechCard),
+        border = CardDefaults.outlinedCardBorder().copy(
+            brush = androidx.compose.ui.graphics.SolidColor(FintechCardBorder)
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(if (log.isSuccessful) FintechSuccess.copy(alpha = 0.15f) else FintechDanger.copy(alpha = 0.15f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = if (log.isSuccessful) Icons.Default.Check else Icons.Default.Warning,
+                        contentDescription = "Status",
+                        tint = if (log.isSuccessful) FintechSuccess else FintechDanger,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Column {
+                    Text(
+                        text = log.actionType.name.replace("_", " "),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = FintechTextPrimary,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 13.sp
+                    )
+                    Text(
+                        text = if (log.reason.isNotBlank()) log.reason else SimpleDateFormat("dd MMM, hh:mm a", Locale.getDefault()).format(Date(log.timestamp)),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = FintechTextSecondary,
+                        fontSize = 11.sp
+                    )
+                }
+            }
+
+            if (log.amount > 0) {
+                Text(
+                    text = FinancialEngine.formatInr(log.amount),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (log.actionType == VaultAuditLog.ActionType.DEPOSIT) FintechSuccess else FintechTextPrimary,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 13.sp
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DepositVaultDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (Double) -> Unit
+) {
+    var amountStr by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Deposit to Emergency Vault", color = FintechTextPrimary, fontWeight = FontWeight.Bold) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("Stash funds into your separate emergency reserve buffer.", color = FintechTextSecondary, fontSize = 12.sp)
+                OutlinedTextField(
+                    value = amountStr,
+                    onValueChange = { amountStr = it },
+                    label = { Text("Amount (₹)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    val amt = amountStr.toDoubleOrNull() ?: 0.0
+                    if (amt > 0) onConfirm(amt)
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = FintechCyan)
+            ) {
+                Text("Deposit", color = Color.Black, fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel", color = FintechTextSecondary) }
+        },
+        containerColor = FintechCard
+    )
+}
+
+@Composable
+private fun WithdrawVaultDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (Double, String) -> Unit
+) {
+    var amountStr by remember { mutableStateOf("") }
+    var pinStr by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Withdraw from Emergency Vault", color = FintechTextPrimary, fontWeight = FontWeight.Bold) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(
+                    "Emergency Reserve withdrawal requires entering your 4-digit security PIN.",
+                    color = FintechTextSecondary,
+                    fontSize = 12.sp
+                )
+                OutlinedTextField(
+                    value = amountStr,
+                    onValueChange = { amountStr = it },
+                    label = { Text("Withdrawal Amount (₹)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = pinStr,
+                    onValueChange = { if (it.length <= 4) pinStr = it },
+                    label = { Text("4-Digit PIN (Default: 1234)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    val amt = amountStr.toDoubleOrNull() ?: 0.0
+                    if (amt > 0 && pinStr.length >= 4) {
+                        onConfirm(amt, pinStr)
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = FintechDanger)
+            ) {
+                Text("Confirm Withdrawal", color = Color.White, fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel", color = FintechTextSecondary) }
+        },
+        containerColor = FintechCard
+    )
+}
+
+@Composable
+private fun UnlockVaultDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    var pinStr by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Unlock Emergency Vault", color = FintechTextPrimary, fontWeight = FontWeight.Bold) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(
+                    "Enter your 4-digit security PIN to unlock the emergency reserve.",
+                    color = FintechTextSecondary,
+                    fontSize = 12.sp
+                )
+                OutlinedTextField(
+                    value = pinStr,
+                    onValueChange = { if (it.length <= 4) pinStr = it },
+                    label = { Text("4-Digit PIN (Default: 1234)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (pinStr.length >= 4) {
+                        onConfirm(pinStr)
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = FintechNeonLime)
+            ) {
+                Text("Unlock", color = FintechNeonLimeDark, fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {

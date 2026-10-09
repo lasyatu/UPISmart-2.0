@@ -3,6 +3,17 @@ package com.example.ui.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.core.detector.UnusualSpendingDetector
+import com.example.core.exception.InsufficientBalanceException
+import com.example.core.exception.InvalidAmountException
+import com.example.core.exception.InvalidPaymentDetailsException
+import com.example.core.exception.InvalidPinException
+import com.example.core.exception.UpiSmartException
+import com.example.core.exception.VaultLockedException
+import com.example.core.model.PaymentRequest
+import com.example.core.model.VaultAuditLog
+import com.example.core.payment.DemoUpiPaymentProcessor
+import com.example.core.vault.EmergencyVault
 import com.example.data.local.AppDatabase
 import com.example.data.local.entity.BillEntity
 import com.example.data.local.entity.RecurringTransactionEntity
@@ -117,6 +128,23 @@ class MainMoneyViewModel(application: Application) : AndroidViewModel(applicatio
     private val _scanPayState = MutableStateFlow(ScanPayUiState())
     val scanPayState: StateFlow<ScanPayUiState> = _scanPayState.asStateFlow()
 
+    // Core Java Business Logic & Payment Engines (Single Source of Truth)
+    val paymentProcessor = DemoUpiPaymentProcessor()
+    val unusualSpendingDetector = UnusualSpendingDetector()
+    val emergencyVault = EmergencyVault(15000.0, "1234")
+
+    private val _vaultReserve = MutableStateFlow(emergencyVault.reserveBalance)
+    val vaultReserve: StateFlow<Double> = _vaultReserve.asStateFlow()
+
+    private val _isVaultLocked = MutableStateFlow(emergencyVault.isLocked)
+    val isVaultLocked: StateFlow<Boolean> = _isVaultLocked.asStateFlow()
+
+    private val _vaultAuditLogs = MutableStateFlow(emergencyVault.auditLogs)
+    val vaultAuditLogs: StateFlow<List<VaultAuditLog>> = _vaultAuditLogs.asStateFlow()
+
+    private val _vaultErrorMessage = MutableStateFlow<String?>(null)
+    val vaultErrorMessage: StateFlow<String?> = _vaultErrorMessage.asStateFlow()
+
     init {
         // Initial setup and check for recurring scheduled executions
         viewModelScope.launch {
@@ -153,11 +181,13 @@ class MainMoneyViewModel(application: Application) : AndroidViewModel(applicatio
                 if (parsed.amount % 1.0 == 0.0) parsed.amount.toLong().toString() else parsed.amount.toString()
             } else ""
             val warning = if (parsed.amount != null && parsed.amount > 0) {
-                SpendingDetectiveEngine.checkPrePaymentWarning(
-                    proposedAmount = parsed.amount,
-                    monthlyBudget = financialSummary.value.monthlyBudget,
-                    remainingBudget = financialSummary.value.remainingBudget
+                val ruleResult = unusualSpendingDetector.evaluatePrePayment(
+                    parsed.amount,
+                    financialSummary.value.monthlyBudget,
+                    financialSummary.value.unreservedBalance,
+                    transactions.value.map { FinancialEngine.toJavaTransaction(it) }
                 )
+                if (ruleResult.isFlagged) "${ruleResult.title}: ${ruleResult.message}" else null
             } else null
 
             _scanPayState.value = _scanPayState.value.copy(
@@ -224,11 +254,13 @@ class MainMoneyViewModel(application: Application) : AndroidViewModel(applicatio
         val clean = amountStr.filter { it.isDigit() || it == '.' }
         val amount = clean.toDoubleOrNull() ?: 0.0
         val warning = if (amount > 0) {
-            SpendingDetectiveEngine.checkPrePaymentWarning(
-                proposedAmount = amount,
-                monthlyBudget = financialSummary.value.monthlyBudget,
-                remainingBudget = financialSummary.value.remainingBudget
+            val ruleResult = unusualSpendingDetector.evaluatePrePayment(
+                amount,
+                financialSummary.value.monthlyBudget,
+                financialSummary.value.unreservedBalance,
+                transactions.value.map { FinancialEngine.toJavaTransaction(it) }
             )
+            if (ruleResult.isFlagged) "${ruleResult.title}: ${ruleResult.message}" else null
         } else null
 
         _scanPayState.value = _scanPayState.value.copy(
@@ -245,34 +277,132 @@ class MainMoneyViewModel(application: Application) : AndroidViewModel(applicatio
         _scanPayState.value = _scanPayState.value.copy(paymentNote = note)
     }
 
+    /**
+     * Executes the simulated UPI payment pipeline powered by Core Java DemoUpiPaymentProcessor.
+     * Demonstrates Polymorphism and Exception Handling with custom Java exceptions.
+     */
     fun confirmSimulatedPayment(onSuccess: (TransactionEntity) -> Unit) {
         val currentState = _scanPayState.value
         val qr = currentState.scannedQr ?: return
         val amount = currentState.enteredAmount.toDoubleOrNull() ?: return
-        if (amount <= 0) return
+        val pin = userSettings.value.securityPin
 
         viewModelScope.launch {
-            _scanPayState.value = currentState.copy(isConfirming = true)
-            val refId = "UPI/DEMO/2026/${(100000..999999).random()}"
-            val tx = TransactionEntity(
-                title = qr.merchantName,
-                recipientUpiId = qr.recipientUpiId,
-                recipientName = qr.merchantName,
-                amount = amount,
-                category = currentState.selectedCategory,
-                timestamp = System.currentTimeMillis(),
-                status = "SUCCESS",
-                referenceId = refId,
-                note = currentState.paymentNote.ifBlank { "Simulated UPI Payment" },
-                isSimulated = true
-            )
-            repository.insertTransaction(tx)
-            _scanPayState.value = currentState.copy(
-                isConfirming = false,
-                lastCompletedTx = tx
-            )
-            onSuccess(tx)
+            try {
+                _scanPayState.value = currentState.copy(isConfirming = true, scanError = null)
+
+                val request = PaymentRequest(
+                    qr.recipientUpiId,
+                    qr.merchantName,
+                    amount,
+                    currentState.selectedCategory,
+                    currentState.paymentNote,
+                    pin,
+                    qr.rawUri.isNotBlank()
+                )
+
+                val availableBalance = financialSummary.value.unreservedBalance
+
+                // Process payment polymorphically through Core Java DemoUpiPaymentProcessor
+                val result = paymentProcessor.processPayment(request, availableBalance, pin)
+                val javaTx = result.transaction
+
+                val tx = TransactionEntity(
+                    title = javaTx.title,
+                    recipientUpiId = javaTx.recipientUpiId,
+                    recipientName = javaTx.recipientName,
+                    amount = javaTx.amount,
+                    category = javaTx.category,
+                    timestamp = javaTx.timestamp,
+                    status = javaTx.status,
+                    referenceId = javaTx.referenceId,
+                    note = javaTx.note,
+                    isSimulated = javaTx.isSimulated
+                )
+
+                repository.insertTransaction(tx)
+                _scanPayState.value = currentState.copy(
+                    isConfirming = false,
+                    lastCompletedTx = tx,
+                    scanError = null
+                )
+                onSuccess(tx)
+            } catch (e: InvalidAmountException) {
+                _scanPayState.value = currentState.copy(isConfirming = false, scanError = e.message)
+            } catch (e: InsufficientBalanceException) {
+                _scanPayState.value = currentState.copy(isConfirming = false, scanError = e.message)
+            } catch (e: InvalidPinException) {
+                _scanPayState.value = currentState.copy(isConfirming = false, scanError = e.message)
+            } catch (e: InvalidPaymentDetailsException) {
+                _scanPayState.value = currentState.copy(isConfirming = false, scanError = e.message)
+            } catch (e: UpiSmartException) {
+                _scanPayState.value = currentState.copy(isConfirming = false, scanError = e.message)
+            } catch (e: Exception) {
+                _scanPayState.value = currentState.copy(isConfirming = false, scanError = "Payment error: ${e.message}")
+            }
         }
+    }
+
+    // Emergency Vault Actions powered by Core Java EmergencyVault
+    fun depositToVault(amount: Double): Boolean {
+        return try {
+            emergencyVault.deposit(amount)
+            _vaultReserve.value = emergencyVault.reserveBalance
+            _vaultAuditLogs.value = emergencyVault.auditLogs
+            _vaultErrorMessage.value = null
+            true
+        } catch (e: InvalidAmountException) {
+            _vaultErrorMessage.value = e.message
+            false
+        }
+    }
+
+    fun withdrawFromVault(amount: Double, pin: String): Boolean {
+        return try {
+            emergencyVault.withdraw(amount, pin)
+            _vaultReserve.value = emergencyVault.reserveBalance
+            _isVaultLocked.value = emergencyVault.isLocked
+            _vaultAuditLogs.value = emergencyVault.auditLogs
+            _vaultErrorMessage.value = null
+            true
+        } catch (e: VaultLockedException) {
+            _isVaultLocked.value = true
+            _vaultErrorMessage.value = e.message
+            false
+        } catch (e: InvalidPinException) {
+            _vaultErrorMessage.value = e.message
+            false
+        } catch (e: InsufficientBalanceException) {
+            _vaultErrorMessage.value = e.message
+            false
+        } catch (e: Exception) {
+            _vaultErrorMessage.value = e.message
+            false
+        }
+    }
+
+    fun unlockVault(pin: String): Boolean {
+        return try {
+            val success = emergencyVault.unlock(pin)
+            _isVaultLocked.value = emergencyVault.isLocked
+            _vaultAuditLogs.value = emergencyVault.auditLogs
+            _vaultErrorMessage.value = null
+            success
+        } catch (e: Exception) {
+            _isVaultLocked.value = emergencyVault.isLocked
+            _vaultErrorMessage.value = e.message
+            false
+        }
+    }
+
+    fun lockVault() {
+        emergencyVault.lock()
+        _isVaultLocked.value = true
+        _vaultAuditLogs.value = emergencyVault.auditLogs
+    }
+
+    fun clearVaultError() {
+        _vaultErrorMessage.value = null
     }
 
     fun clearPaymentReceipt() {

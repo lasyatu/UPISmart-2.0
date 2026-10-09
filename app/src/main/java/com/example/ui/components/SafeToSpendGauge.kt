@@ -153,7 +153,7 @@ fun SafeToSpendGauge(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Budget Utilization Bar
+            // 100% Salary-Utilization Meter Bar
             Column {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -161,15 +161,16 @@ fun SafeToSpendGauge(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Spent ${FinancialEngine.formatInr(summary.totalSpentThisMonth)} of ${FinancialEngine.formatInr(summary.monthlyBudget)}",
+                        text = "Salary Meter: ${summary.budgetUtilizationPercentage.toInt()}% used • ${summary.percentageRemaining.toInt()}% left",
                         style = MaterialTheme.typography.bodySmall,
                         color = FintechTextSecondary,
-                        fontSize = 12.sp
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium
                     )
                     Text(
                         text = "${summary.budgetUtilizationPercentage.toInt()}%",
                         style = MaterialTheme.typography.bodySmall,
-                        color = if (summary.budgetUtilizationPercentage >= 80) FintechWarning else FintechNeonLime,
+                        color = if (summary.isOverBudget) FintechDanger else if (summary.budgetUtilizationPercentage >= 80) FintechWarning else FintechNeonLime,
                         fontWeight = FontWeight.Bold,
                         fontSize = 12.sp
                     )
@@ -183,9 +184,30 @@ fun SafeToSpendGauge(
                         .fillMaxWidth()
                         .height(6.dp)
                         .clip(RoundedCornerShape(3.dp)),
-                    color = if (summary.budgetUtilizationPercentage >= 80) FintechWarning else FintechNeonLime,
+                    color = if (summary.isOverBudget) FintechDanger else if (summary.budgetUtilizationPercentage >= 80) FintechWarning else FintechNeonLime,
                     trackColor = FintechSurfaceVariant
                 )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Spent ${FinancialEngine.formatInr(summary.totalSpentThisMonth)} of ${FinancialEngine.formatInr(summary.monthlyBudget)}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = FintechTextSecondary,
+                        fontSize = 10.sp
+                    )
+                    Text(
+                        text = "Remaining: ${FinancialEngine.formatInr(summary.remainingBudget)}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (summary.isOverBudget) FintechDanger else FintechNeonLime,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(10.dp))
