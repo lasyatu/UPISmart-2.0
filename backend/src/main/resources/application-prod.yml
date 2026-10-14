@@ -1,0 +1,16 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    # Production Cloud SQL MySQL connection string.
+    # Uses either Google Cloud SQL Socket Factory (when CLOUD_SQL_CONNECTION_NAME is set)
+    # or direct TCP connection (when DB_HOST is set).
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql:///${DB_NAME:upismart_db}?cloudSqlInstance=${CLOUD_SQL_CONNECTION_NAME:}&socketFactory=com.google.cloud.sql.mysql.SocketFactory&useSSL=false}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USER:upismart_user}
+    password: ${DB_PASS:}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.MySQLDialect

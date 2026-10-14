@@ -46,6 +46,7 @@ import com.example.domain.model.FinancialSummary
 import com.example.domain.service.FinancialEngine
 import com.example.ui.theme.FintechCard
 import com.example.ui.theme.FintechCardBorder
+import com.example.ui.theme.FintechDanger
 import com.example.ui.theme.FintechNeonLime
 import com.example.ui.theme.FintechSurfaceVariant
 import com.example.ui.theme.FintechTextPrimary

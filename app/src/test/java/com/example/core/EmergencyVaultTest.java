@@ -98,7 +98,7 @@ public class EmergencyVaultTest {
     }
 
     @Test
-    public void testThreeInvalidAttemptsTriggersVaultLockout() {
+    public void testThreeInvalidAttemptsTriggersVaultLockout() throws Exception {
         // Attempt 1: Wrong PIN
         try { vault.withdraw(500.0, "1111"); } catch (InvalidPinException ignored) {}
         assertFalse(vault.isLocked());

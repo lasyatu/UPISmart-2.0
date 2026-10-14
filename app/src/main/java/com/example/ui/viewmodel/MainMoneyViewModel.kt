@@ -228,6 +228,7 @@ class MainMoneyViewModel(application: Application) : AndroidViewModel(applicatio
                 isSimulated = true
             )
             repository.insertTransaction(tx)
+            repository.syncTransactionToCloud(tx)
         }
     }
 
@@ -321,6 +322,7 @@ class MainMoneyViewModel(application: Application) : AndroidViewModel(applicatio
                 )
 
                 repository.insertTransaction(tx)
+                repository.syncTransactionToCloud(tx)
                 _scanPayState.value = currentState.copy(
                     isConfirming = false,
                     lastCompletedTx = tx,

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPISmart 2.0 — Web Financial Dashboard</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">₹</div>
+                <div class="brand-text">
+                    <h1>UPISmart 2.0</h1>
+                    <span>Intelligent UPI System</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="#dashboard" class="nav-item active">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                    Dashboard
+                </a>
+                <a href="#transactions" class="nav-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l5.59-5.59L19 10l-7 7z"/></svg>
+                    Transactions
+                </a>
+                <a href="#vault" class="nav-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                    Emergency Vault
+                </a>
+            </nav>
+
+            <div class="user-card">
+                <div class="user-avatar">AR</div>
+                <div class="user-info">
+                    <strong id="sidebarUsername">Alex Rivera</strong>
+                    <span id="sidebarUpi">alex@demo.upismart</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header Bar -->
+            <header class="top-bar">
+                <div>
+                    <h2>Academic Financial Dashboard</h2>
+                    <p class="subtitle">Spring Boot 3 REST API + MySQL + Jetpack Compose Sync</p>
+                </div>
+                <div class="top-bar-actions">
+                    <div id="connectionStatusPill" class="status-pill status-checking">
+                        <span class="pulse-dot"></span>
+                        <span id="connectionStatusText">Checking Cloud SQL...</span>
+                    </div>
+                    <button class="btn btn-primary" onclick="openPaymentModal()">
+                        + New UPI Payment
+                    </button>
+                </div>
+            </header>
+
+            <!-- Alerts Banner Container -->
+            <div id="alertContainer"></div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">Monthly Salary</span>
+                    <div class="stat-value" id="monthlySalaryDisplay">₹50,000.00</div>
+                    <span class="stat-subtext">Configured monthly income</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Total Spent</span>
+                    <div class="stat-value" id="totalExpenditureDisplay">₹0.00</div>
+                    <span class="stat-subtext" id="spentPercentageDisplay">0% utilized</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Remaining Balance</span>
+                    <div class="stat-value stat-highlight" id="remainingBalanceDisplay">₹50,000.00</div>
+                    <span class="stat-subtext" id="remainingPercentageDisplay">100% available</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Daily Safe-to-Spend</span>
+                    <div class="stat-value stat-safe" id="dailySafeToSpendDisplay">₹1,166.67</div>
+                    <span class="stat-subtext">Unreserved daily guidance</span>
+                </div>
+            </div>
+
+            <!-- 100% Salary-Utilization Meter Section -->
+            <section class="section-card">
+                <div class="card-header">
+                    <div>
+                        <h3>100% Salary-Utilization Meter</h3>
+                        <p>Core Java algorithm tracking monthly budget consumption and safe thresholds</p>
+                    </div>
+                    <span id="utilizationStatusBadge" class="badge badge-success">OPTIMAL</span>
+                </div>
+
+                <div class="meter-container">
+                    <div class="meter-bar-track">
+                        <div id="meterProgressFill" class="meter-bar-fill" style="width: 0%;"></div>
+                    </div>
+                    <div class="meter-markers">
+                        <span>0%</span>
+                        <span>25%</span>
+                        <span>50%</span>
+                        <span>75%</span>
+                        <span>100%</span>
+                    </div>
+                </div>
+
+                <!-- Category Breakdown Tags -->
+                <div class="category-breakdown">
+                    <h4>Expense Categorization</h4>
+                    <div id="categoryTagsContainer" class="tag-list">
+                        <span class="category-tag">No expenses yet</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Grid: Emergency Vault & Recent Transactions -->
+            <div class="two-column-grid">
+                <!-- Emergency Vault Card -->
+                <section class="section-card" id="vault">
+                    <div class="card-header">
+                        <div>
+                            <h3>Emergency Vault Lock</h3>
+                            <p>Separately tracked emergency reserve with PIN lockout</p>
+                        </div>
+                        <span id="vaultStatusBadge" class="badge badge-secondary">LOCKED</span>
+                    </div>
+
+                    <div class="vault-balance-box">
+                        <span class="vault-balance-label">Current Protected Reserve</span>
+                        <div class="vault-balance-value" id="vaultReserveDisplay">₹15,000.00</div>
+                        <p class="vault-notice">Isolated from regular spending calculations</p>
+                    </div>
+
+                    <div class="vault-actions">
+                        <button class="btn btn-outline" onclick="openVaultModal('deposit')">Deposit Reserve</button>
+                        <button class="btn btn-secondary" onclick="openVaultModal('withdraw')">Withdraw Emergency Funds</button>
+                    </div>
+
+                    <!-- Vault Audit Trail -->
+                    <div class="audit-trail-container">
+                        <h4>Security Audit Trail</h4>
+                        <div id="vaultAuditList" class="audit-list">
+                            <div class="audit-item">Loading audit events...</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Transactions Section -->
+                <section class="section-card" id="transactions">
+                    <div class="card-header">
+                        <div>
+                            <h3>Simulated UPI Transactions</h3>
+                            <p>Persistent MySQL transaction history</p>
+                        </div>
+                        <button class="btn btn-sm btn-outline" onclick="loadDashboardData()">Refresh</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Recipient</th>
+                                    <th>Category</th>
+                                    <th>Reference</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionTableBody">
+                                <tr>
+                                    <td colspan="5" class="empty-cell">Loading transactions...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>Simulated UPI Payment Engine</h3>
+                <button class="close-btn" onclick="closePaymentModal()">&times;</button>
+            </div>
+            <form id="paymentForm" onsubmit="handlePaymentSubmit(event)">
+                <div class="form-group">
+                    <label>Recipient UPI ID</label>
+                    <input type="text" id="recipientUpi" required placeholder="e.g. coffee@upi or friend@bank" value="cafe@upi">
+                </div>
+                <div class="form-group">
+                    <label>Recipient Name</label>
+                    <input type="text" id="recipientName" required placeholder="e.g. Blue Tokai Coffee" value="Blue Tokai Coffee">
+                </div>
+                <div class="form-group">
+                    <label>Amount (₹)</label>
+                    <input type="number" id="paymentAmount" step="0.01" min="1" required placeholder="500.00" value="450.00">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="paymentCategory">
+                        <option value="Food & Dining">Food & Dining</option>
+                        <option value="Groceries">Groceries</option>
+                        <option value="Rent">Rent</option>
+                        <option value="Bills & Utilities">Bills & Utilities</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Transportation">Transportation</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Demo UPI PIN (Default: 1234)</label>
+                    <input type="password" id="paymentPin" maxlength="6" required placeholder="••••" value="1234">
+                </div>
+                <div class="form-group">
+                    <label>Note / Purpose</label>
+                    <input type="text" id="paymentNote" placeholder="Simulated payment note" value="Team morning coffee">
+                </div>
+
+                <div id="unusualSpendingWarning" class="alert-box alert-warning" style="display: none;">
+                    <strong>Unusual Spending Rule Alert!</strong>
+                    <p id="unusualSpendingMessage"></p>
+                    <label class="confirm-checkbox">
+                        <input type="checkbox" id="userConfirmCheckbox"> I acknowledge and confirm this high transaction
+                    </label>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closePaymentModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="submitPaymentBtn">Confirm & Pay</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Vault Action Modal -->
+    <div id="vaultModal" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 id="vaultModalTitle">Emergency Vault Operation</h3>
+                <button class="close-btn" onclick="closeVaultModal()">&times;</button>
+            </div>
+            <form id="vaultForm" onsubmit="handleVaultSubmit(event)">
+                <input type="hidden" id="vaultActionType" value="deposit">
+                <div class="form-group">
+                    <label>Amount (₹)</label>
+                    <input type="number" id="vaultAmount" step="0.01" min="1" required placeholder="1000.00">
+                </div>
+                <div class="form-group" id="vaultPinGroup">
+                    <label>Vault PIN (Default: 1234)</label>
+                    <input type="password" id="vaultPin" maxlength="6" placeholder="••••" value="1234">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeVaultModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="submitVaultBtn">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
