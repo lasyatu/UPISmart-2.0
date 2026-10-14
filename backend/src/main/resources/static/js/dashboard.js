@@ -198,7 +198,10 @@ async function handlePaymentSubmit(event) {
     try {
         const res = await fetch(`${API_BASE}/transactions`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-API-KEY': 'upismart-demo-secure-key-2026'
+            },
             body: JSON.stringify(payload)
         });
 
@@ -257,7 +260,10 @@ async function handleVaultSubmit(event) {
     try {
         const res = await fetch(endpoint, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-API-KEY': 'upismart-demo-secure-key-2026'
+            },
             body: JSON.stringify(payload)
         });
         const data = await res.json();
