@@ -3,11 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UPISmart 2.0 — Web Financial Dashboard</title>
+    <meta name="theme-color" content="#0D0D14">
+    <meta name="description" content="UPISmart 2.0 — Cross-Platform Intelligent Personal Financial Management OS with AWS Cloud Sync">
+    <title>UPISmart 2.0 — Personal Money OS</title>
+    
+    <!-- PWA Manifest & Icons -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="app-layout">
@@ -17,22 +24,42 @@
                 <div class="brand-icon">₹</div>
                 <div class="brand-text">
                     <h1>UPISmart 2.0</h1>
-                    <span>Intelligent UPI System</span>
+                    <span>Personal Money OS</span>
                 </div>
             </div>
 
-            <nav class="nav-menu">
-                <a href="#dashboard" class="nav-item active">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+            <nav class="nav-menu" id="mainNav">
+                <a href="#dashboard" class="nav-item active" data-view="dashboard">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
                     Dashboard
                 </a>
-                <a href="#transactions" class="nav-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l5.59-5.59L19 10l-7 7z"/></svg>
+                <a href="#transactions" class="nav-item" data-view="transactions">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l5.59-5.59L19 10l-7 7z"/></svg>
                     Transactions
                 </a>
-                <a href="#vault" class="nav-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                <a href="#vault" class="nav-item" data-view="vault">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
                     Emergency Vault
+                </a>
+                <a href="#bills" class="nav-item" data-view="bills">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                    Bills Radar
+                </a>
+                <a href="#detective" class="nav-item" data-view="detective">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                    Spending Detective
+                </a>
+                <a href="#bucks" class="nav-item" data-view="bucks">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+                    Bucks Assistant
+                </a>
+                <a href="#scanpay" class="nav-item" data-view="scanpay">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm13 3h3v3h-3v-3zm-3-3h3v3h-3v-3zm3 0h3v3h-3v-3zm-3 3h3v3h-3v-3z"/></svg>
+                    QR Scan & Pay
+                </a>
+                <a href="#settings" class="nav-item" data-view="settings">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                    Settings & AWS
                 </a>
             </nav>
 
@@ -45,19 +72,22 @@
             </div>
         </aside>
 
-        <!-- Main Content Area -->
+        <!-- Main Content View Container -->
         <main class="main-content">
-            <!-- Header Bar -->
+            <!-- Top Bar -->
             <header class="top-bar">
                 <div>
-                    <h2>Academic Financial Dashboard</h2>
-                    <p class="subtitle">Spring Boot 3 REST API + MySQL + Jetpack Compose Sync</p>
+                    <h2 id="viewTitle">Financial Dashboard</h2>
+                    <p class="subtitle" id="viewSubtitle">Spring Boot 3 + Amazon RDS MySQL + Cross-Platform PWA</p>
                 </div>
                 <div class="top-bar-actions">
                     <div id="connectionStatusPill" class="status-pill status-checking">
                         <span class="pulse-dot"></span>
-                        <span id="connectionStatusText">Checking Cloud SQL...</span>
+                        <span id="connectionStatusText">Checking Cloud Backend...</span>
                     </div>
+                    <button class="btn btn-outline btn-sm" id="pwaInstallBtn" style="display: none;" onclick="triggerPwaInstall()">
+                        ⬇️ Install App
+                    </button>
                     <button class="btn btn-primary" onclick="openPaymentModal()">
                         + New UPI Payment
                     </button>
@@ -67,102 +97,138 @@
             <!-- Alerts Banner Container -->
             <div id="alertContainer"></div>
 
-            <!-- Stats Grid -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <span class="stat-label">Monthly Salary</span>
-                    <div class="stat-value" id="monthlySalaryDisplay">₹50,000.00</div>
-                    <span class="stat-subtext">Configured monthly income</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-label">Total Spent</span>
-                    <div class="stat-value" id="totalExpenditureDisplay">₹0.00</div>
-                    <span class="stat-subtext" id="spentPercentageDisplay">0% utilized</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-label">Remaining Balance</span>
-                    <div class="stat-value stat-highlight" id="remainingBalanceDisplay">₹50,000.00</div>
-                    <span class="stat-subtext" id="remainingPercentageDisplay">100% available</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-label">Daily Safe-to-Spend</span>
-                    <div class="stat-value stat-safe" id="dailySafeToSpendDisplay">₹1,166.67</div>
-                    <span class="stat-subtext">Unreserved daily guidance</span>
-                </div>
-            </div>
-
-            <!-- 100% Salary-Utilization Meter Section -->
-            <section class="section-card">
-                <div class="card-header">
-                    <div>
-                        <h3>100% Salary-Utilization Meter</h3>
-                        <p>Core Java algorithm tracking monthly budget consumption and safe thresholds</p>
+            <!-- TAB 1: DASHBOARD VIEW -->
+            <div id="view-dashboard" class="view-section active">
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">Monthly Salary</span>
+                        <div class="stat-value" id="monthlySalaryDisplay">₹50,000.00</div>
+                        <span class="stat-subtext">Configured monthly income</span>
                     </div>
-                    <span id="utilizationStatusBadge" class="badge badge-success">OPTIMAL</span>
-                </div>
-
-                <div class="meter-container">
-                    <div class="meter-bar-track">
-                        <div id="meterProgressFill" class="meter-bar-fill" style="width: 0%;"></div>
+                    <div class="stat-card">
+                        <span class="stat-label">Total Outflows</span>
+                        <div class="stat-value" id="totalExpenditureDisplay">₹0.00</div>
+                        <span class="stat-subtext" id="spentPercentageDisplay">0% utilized</span>
                     </div>
-                    <div class="meter-markers">
-                        <span>0%</span>
-                        <span>25%</span>
-                        <span>50%</span>
-                        <span>75%</span>
-                        <span>100%</span>
+                    <div class="stat-card">
+                        <span class="stat-label">Remaining Balance</span>
+                        <div class="stat-value stat-highlight" id="remainingBalanceDisplay">₹50,000.00</div>
+                        <span class="stat-subtext" id="remainingPercentageDisplay">100% available</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Daily Safe-to-Spend</span>
+                        <div class="stat-value stat-safe" id="dailySafeToSpendDisplay">₹1,166.67</div>
+                        <span class="stat-subtext">Unreserved velocity limit</span>
                     </div>
                 </div>
 
-                <!-- Category Breakdown Tags -->
-                <div class="category-breakdown">
-                    <h4>Expense Categorization</h4>
-                    <div id="categoryTagsContainer" class="tag-list">
-                        <span class="category-tag">No expenses yet</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Grid: Emergency Vault & Recent Transactions -->
-            <div class="two-column-grid">
-                <!-- Emergency Vault Card -->
-                <section class="section-card" id="vault">
+                <!-- 100% Salary-Utilization Meter Section -->
+                <section class="section-card">
                     <div class="card-header">
                         <div>
-                            <h3>Emergency Vault Lock</h3>
-                            <p>Separately tracked emergency reserve with PIN lockout</p>
+                            <h3>100% Salary-Utilization Meter</h3>
+                            <p>Deterministic Java calculation tracking spending velocity vs monthly salary</p>
                         </div>
-                        <span id="vaultStatusBadge" class="badge badge-secondary">LOCKED</span>
+                        <span id="utilizationStatusBadge" class="badge badge-success">OPTIMAL</span>
                     </div>
 
-                    <div class="vault-balance-box">
-                        <span class="vault-balance-label">Current Protected Reserve</span>
-                        <div class="vault-balance-value" id="vaultReserveDisplay">₹15,000.00</div>
-                        <p class="vault-notice">Isolated from regular spending calculations</p>
+                    <div class="meter-container">
+                        <div class="meter-bar-track">
+                            <div id="meterProgressFill" class="meter-bar-fill" style="width: 0%;"></div>
+                        </div>
+                        <div class="meter-markers">
+                            <span>0%</span>
+                            <span>25%</span>
+                            <span>50%</span>
+                            <span>75%</span>
+                            <span>100%</span>
+                        </div>
                     </div>
 
-                    <div class="vault-actions">
-                        <button class="btn btn-outline" onclick="openVaultModal('deposit')">Deposit Reserve</button>
-                        <button class="btn btn-secondary" onclick="openVaultModal('withdraw')">Withdraw Emergency Funds</button>
-                    </div>
-
-                    <!-- Vault Audit Trail -->
-                    <div class="audit-trail-container">
-                        <h4>Security Audit Trail</h4>
-                        <div id="vaultAuditList" class="audit-list">
-                            <div class="audit-item">Loading audit events...</div>
+                    <!-- Category Breakdown Tags -->
+                    <div class="category-breakdown">
+                        <h4>Outflow Categorization</h4>
+                        <div id="categoryTagsContainer" class="tag-list">
+                            <span class="category-tag">No outflows recorded yet</span>
                         </div>
                     </div>
                 </section>
 
-                <!-- Transactions Section -->
-                <section class="section-card" id="transactions">
+                <!-- Two-Column Grid: Vault & Recent Transactions -->
+                <div class="two-column-grid">
+                    <!-- Emergency Vault Card -->
+                    <section class="section-card">
+                        <div class="card-header">
+                            <div>
+                                <h3>Emergency Vault Lock</h3>
+                                <p>Protected reserve isolated from daily spend</p>
+                            </div>
+                            <span id="vaultStatusBadge" class="badge badge-secondary">LOCKED</span>
+                        </div>
+
+                        <div class="vault-balance-box">
+                            <span class="vault-balance-label">Protected Reserve</span>
+                            <div class="vault-balance-value" id="vaultReserveDisplay">₹15,000.00</div>
+                            <p class="vault-notice">Protected by 4-digit PIN authentication</p>
+                        </div>
+
+                        <div class="vault-actions">
+                            <button class="btn btn-outline" onclick="openVaultModal('deposit')">Deposit Reserve</button>
+                            <button class="btn btn-secondary" onclick="openVaultModal('withdraw')">Withdraw Funds</button>
+                        </div>
+                    </section>
+
+                    <!-- Recent Transactions Summary -->
+                    <section class="section-card">
+                        <div class="card-header">
+                            <div>
+                                <h3>Recent Activity</h3>
+                                <p>Simulated UPI ledger</p>
+                            </div>
+                            <button class="btn btn-sm btn-outline" onclick="loadDashboardData()">Refresh</button>
+                        </div>
+
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Recipient</th>
+                                        <th>Category</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentTransactionsTableBody">
+                                    <tr><td colspan="3" class="empty-cell">Loading activity...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- TAB 2: TRANSACTIONS VIEW -->
+            <div id="view-transactions" class="view-section">
+                <section class="section-card">
                     <div class="card-header">
                         <div>
-                            <h3>Simulated UPI Transactions</h3>
-                            <p>Persistent MySQL transaction history</p>
+                            <h3>Persistent Transaction Ledger</h3>
+                            <p>Complete transactional history synced with MySQL</p>
                         </div>
-                        <button class="btn btn-sm btn-outline" onclick="loadDashboardData()">Refresh</button>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="txSearchInput" placeholder="Search by recipient or reference..." oninput="filterTransactions()" style="background: var(--surface); border: 1px solid var(--card-border); color: var(--text-primary); padding: 8px 12px; border-radius: 8px; font-size: 13px;">
+                            <select id="txCategoryFilter" onchange="filterTransactions()" style="background: var(--surface); border: 1px solid var(--card-border); color: var(--text-primary); padding: 8px 12px; border-radius: 8px; font-size: 13px;">
+                                <option value="ALL">All Categories</option>
+                                <option value="Food & Dining">Food & Dining</option>
+                                <option value="Groceries">Groceries</option>
+                                <option value="Bills & Utilities">Bills & Utilities</option>
+                                <option value="Subscriptions">Subscriptions</option>
+                                <option value="Housing">Housing</option>
+                                <option value="Shopping">Shopping</option>
+                                <option value="Transportation">Transportation</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="table-container">
@@ -171,24 +237,243 @@
                                 <tr>
                                     <th>Recipient</th>
                                     <th>Category</th>
-                                    <th>Reference</th>
+                                    <th>Reference ID</th>
                                     <th>Amount</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
-                            <tbody id="transactionTableBody">
-                                <tr>
-                                    <td colspan="5" class="empty-cell">Loading transactions...</td>
-                                </tr>
+                            <tbody id="fullTransactionTableBody">
+                                <tr><td colspan="5" class="empty-cell">Loading transactions...</td></tr>
                             </tbody>
                         </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB 3: EMERGENCY VAULT VIEW -->
+            <div id="view-vault" class="view-section">
+                <section class="section-card">
+                    <div class="card-header">
+                        <div>
+                            <h3>Emergency Vault Management</h3>
+                            <p>Strictly segregated reserve requiring security PIN verification</p>
+                        </div>
+                        <span id="vaultStatusBadgeDetail" class="badge badge-secondary">LOCKED</span>
+                    </div>
+
+                    <div class="vault-balance-box">
+                        <span class="vault-balance-label">Current Reserve Balance</span>
+                        <div class="vault-balance-value" id="vaultReserveDisplayDetail">₹15,000.00</div>
+                        <p class="vault-notice">Unlocks for verified medical, housing, or unforeseen emergencies</p>
+                    </div>
+
+                    <div class="vault-actions" style="max-width: 400px; margin: 0 auto 24px;">
+                        <button class="btn btn-outline" onclick="openVaultModal('deposit')">Deposit to Reserve</button>
+                        <button class="btn btn-secondary" onclick="openVaultModal('withdraw')">Withdraw Emergency Funds</button>
+                    </div>
+
+                    <div class="audit-trail-container">
+                        <h4 style="font-size: 14px; margin-bottom: 12px; color: var(--text-secondary);">Security Audit Log</h4>
+                        <div id="vaultAuditList" class="audit-list">
+                            <div class="audit-item">Loading security audit events...</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB 4: BILLS RADAR VIEW -->
+            <div id="view-bills" class="view-section">
+                <section class="section-card">
+                    <div class="card-header">
+                        <div>
+                            <h3>Bills Radar & Recurring Obligations</h3>
+                            <p>Scheduled obligations reserving funds from daily Safe-to-Spend limits</p>
+                        </div>
+                        <button class="btn btn-sm btn-primary" onclick="openAddBillModal()">+ Add New Bill</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Bill Name</th>
+                                    <th>Category</th>
+                                    <th>Due Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="billsTableBody">
+                                <tr><td colspan="6" class="empty-cell">Loading scheduled bills...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB 5: SPENDING DETECTIVE VIEW -->
+            <div id="view-detective" class="view-section">
+                <section class="section-card">
+                    <div class="card-header">
+                        <div>
+                            <h3>Explainable Spending Detective</h3>
+                            <p>Transparent deterministic rule heuristics — no black-box mystery models</p>
+                        </div>
+                        <span class="badge badge-success" id="detectiveHealthBadge">NORMAL</span>
+                    </div>
+
+                    <div class="stats-grid" style="margin-bottom: 20px;">
+                        <div class="stat-card">
+                            <span class="stat-label">Velocity Pace</span>
+                            <div class="stat-value" id="detectiveVelocityDisplay">0%</div>
+                            <span class="stat-subtext">Monthly consumption speed</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Bills Reserved</span>
+                            <div class="stat-value stat-safe" id="detectiveBillsDisplay">₹0.00</div>
+                            <span class="stat-subtext">Protected from daily spend</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Top Category</span>
+                            <div class="stat-value" id="detectiveTopCatDisplay">None</div>
+                            <span class="stat-subtext" id="detectiveTopCatAmt">₹0.00</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Peak Debit</span>
+                            <div class="stat-value stat-highlight" id="detectivePeakDebitDisplay">None</div>
+                            <span class="stat-subtext" id="detectivePeakDebitAmt">₹0.00</span>
+                        </div>
+                    </div>
+
+                    <h4 style="font-size: 14px; margin-bottom: 12px; color: var(--text-secondary);">Rule Detection Findings</h4>
+                    <div id="detectiveRulesList" style="display: flex; flex-direction: column; gap: 10px;">
+                        <div class="alert-box alert-warning">Evaluating deterministic heuristics...</div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB 6: BUCKS AI ASSISTANT VIEW -->
+            <div id="view-bucks" class="view-section">
+                <section class="section-card">
+                    <div class="card-header">
+                        <div>
+                            <h3>Bucks — Witty Gen-Z Financial Companion</h3>
+                            <p>Grounded in actual Room & MySQL ledger numbers — no cap, fr</p>
+                        </div>
+                        <span class="badge badge-secondary">ONLINE</span>
+                    </div>
+
+                    <div class="chat-window" id="bucksChatWindow">
+                        <div class="chat-bubble chat-bucks">
+                            Yo! I'm <strong>Bucks</strong>, your personal finance wingman. I keep track of your cash flow, Safe-to-Spend pace, and upcoming bills so you don't end the month broke. What's good?
+                        </div>
+                    </div>
+
+                    <div class="quick-chips">
+                        <button class="chip-btn" onclick="sendBucksQuery('How much is Safe-to-Spend today?')">💰 Safe-to-Spend?</button>
+                        <button class="chip-btn" onclick="sendBucksQuery('Are any bills due soon?')">📡 Upcoming Bills</button>
+                        <button class="chip-btn" onclick="sendBucksQuery('What is my biggest spending category?')">📊 Where did my money go?</button>
+                        <button class="chip-btn" onclick="sendBucksQuery('Can I afford a ₹3,000 dinner tonight?')">🍕 Can I afford ₹3k?</button>
+                    </div>
+
+                    <div style="display: flex; gap: 8px; margin-top: 12px;">
+                        <input type="text" id="bucksUserInput" placeholder="Ask Bucks about your finances..." onkeydown="if(event.key==='Enter') submitBucksMessage()" style="flex: 1; background: var(--surface); border: 1px solid var(--card-border); color: var(--text-primary); padding: 12px 14px; border-radius: var(--radius-sm); font-size: 14px;">
+                        <button class="btn btn-primary" onclick="submitBucksMessage()">Send</button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB 7: QR SCAN & PAY VIEW -->
+            <div id="view-scanpay" class="view-section">
+                <section class="section-card" style="max-width: 650px; margin: 0 auto;">
+                    <div class="card-header">
+                        <div>
+                            <h3>Simulated QR Scan & Pay</h3>
+                            <p>Test simulated UPI transfers with strict demo validation</p>
+                        </div>
+                        <span class="badge badge-warning">SIMULATED ONLY</span>
+                    </div>
+
+                    <div class="scanner-viewport">
+                        <div class="scanner-laser"></div>
+                        <div style="text-align: center; color: var(--text-muted); font-size: 13px;">
+                            <span style="font-size: 32px; display: block; margin-bottom: 8px;">📷</span>
+                            Scanner Active
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-bottom: 24px;">
+                        <button class="btn btn-secondary" onclick="loadSampleQr()">
+                            ⚡ Load Sample Demo QR Code
+                        </button>
+                    </div>
+
+                    <form id="qrScanForm" onsubmit="handleQrPaySubmit(event)">
+                        <div class="form-group">
+                            <label>Scanned UPI URI / Recipient</label>
+                            <input type="text" id="qrScannedUri" required placeholder="upismart://pay?recipient=cafe@demo&name=Blue%20Tokai" value="upismart://pay?recipient=cafe@demo&name=Blue%20Tokai">
+                        </div>
+                        <div class="form-group">
+                            <label>Amount (₹)</label>
+                            <input type="number" id="qrPayAmount" step="0.01" min="1" required placeholder="250.00" value="350.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Demo UPI PIN (1234)</label>
+                            <input type="password" id="qrPayPin" maxlength="6" required placeholder="••••" value="1234">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            Confirm & Execute Simulated Transfer
+                        </button>
+                    </form>
+                </section>
+            </div>
+
+            <!-- TAB 8: SETTINGS & AWS VIEW -->
+            <div id="view-settings" class="view-section">
+                <section class="section-card">
+                    <div class="card-header">
+                        <div>
+                            <h3>AWS Cloud Infrastructure & Security</h3>
+                            <p>Architecture specifications and deployment configuration</p>
+                        </div>
+                        <span class="badge badge-success">AWS PRODUCTION SPEC</span>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-label">Hosting Engine</span>
+                            <div class="stat-value" style="font-size: 18px;">AWS App Runner</div>
+                            <span class="stat-subtext">Serverless container runner</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Database</span>
+                            <div class="stat-value" style="font-size: 18px;">Amazon RDS</div>
+                            <span class="stat-subtext">MySQL 8.0 gp3 storage</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Secrets</span>
+                            <div class="stat-value" style="font-size: 18px;">Secrets Manager</div>
+                            <span class="stat-subtext">Zero hardcoded credentials</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">App Packaging</span>
+                            <div class="stat-value" style="font-size: 18px;">PWA / Capacitor</div>
+                            <span class="stat-subtext">Desktop & iOS ready</span>
+                        </div>
+                    </div>
+
+                    <div class="alert-box alert-warning" style="margin-top: 16px;">
+                        <strong>🔒 Financial Security Notice:</strong>
+                        <p>All payments in UPISmart 2.0 are 100% simulated for academic demonstrations. Real banking credentials, debit card numbers, and production UPI PINs are never collected or stored.</p>
                     </div>
                 </section>
             </div>
         </main>
     </div>
 
-    <!-- Payment Modal -->
+    <!-- Modals -->
+    <!-- 1. UPI Payment Modal -->
     <div id="paymentModal" class="modal">
         <div class="modal-dialog">
             <div class="modal-header">
@@ -198,23 +483,23 @@
             <form id="paymentForm" onsubmit="handlePaymentSubmit(event)">
                 <div class="form-group">
                     <label>Recipient UPI ID</label>
-                    <input type="text" id="recipientUpi" required placeholder="e.g. coffee@upi or friend@bank" value="cafe@upi">
+                    <input type="text" id="recipientUpi" required placeholder="merchant@demo" value="cafe@demo">
                 </div>
                 <div class="form-group">
                     <label>Recipient Name</label>
-                    <input type="text" id="recipientName" required placeholder="e.g. Blue Tokai Coffee" value="Blue Tokai Coffee">
+                    <input type="text" id="recipientName" required placeholder="Coffee House" value="Artisan Coffee Roasters">
                 </div>
                 <div class="form-group">
                     <label>Amount (₹)</label>
-                    <input type="number" id="paymentAmount" step="0.01" min="1" required placeholder="500.00" value="450.00">
+                    <input type="number" id="paymentAmount" step="0.01" min="1" required placeholder="450.00" value="320.00">
                 </div>
                 <div class="form-group">
                     <label>Category</label>
                     <select id="paymentCategory">
                         <option value="Food & Dining">Food & Dining</option>
                         <option value="Groceries">Groceries</option>
-                        <option value="Rent">Rent</option>
                         <option value="Bills & Utilities">Bills & Utilities</option>
+                        <option value="Subscriptions">Subscriptions</option>
                         <option value="Shopping">Shopping</option>
                         <option value="Transportation">Transportation</option>
                         <option value="Other">Other</option>
@@ -226,7 +511,7 @@
                 </div>
                 <div class="form-group">
                     <label>Note / Purpose</label>
-                    <input type="text" id="paymentNote" placeholder="Simulated payment note" value="Team morning coffee">
+                    <input type="text" id="paymentNote" placeholder="Simulated payment note" value="Team lunch">
                 </div>
 
                 <div id="unusualSpendingWarning" class="alert-box alert-warning" style="display: none;">
@@ -245,7 +530,7 @@
         </div>
     </div>
 
-    <!-- Vault Action Modal -->
+    <!-- 2. Vault Modal -->
     <div id="vaultModal" class="modal">
         <div class="modal-dialog">
             <div class="modal-header">
@@ -256,7 +541,7 @@
                 <input type="hidden" id="vaultActionType" value="deposit">
                 <div class="form-group">
                     <label>Amount (₹)</label>
-                    <input type="number" id="vaultAmount" step="0.01" min="1" required placeholder="1000.00">
+                    <input type="number" id="vaultAmount" step="0.01" min="1" required placeholder="1000.00" value="1000.00">
                 </div>
                 <div class="form-group" id="vaultPinGroup">
                     <label>Vault PIN (Default: 1234)</label>
@@ -270,6 +555,44 @@
         </div>
     </div>
 
+    <!-- 3. Add Bill Modal -->
+    <div id="billModal" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>Schedule New Bill Obligation</h3>
+                <button class="close-btn" onclick="closeBillModal()">&times;</button>
+            </div>
+            <form id="billForm" onsubmit="handleAddBillSubmit(event)">
+                <div class="form-group">
+                    <label>Bill Name</label>
+                    <input type="text" id="billTitle" required placeholder="e.g. Broadband Fiber" value="Mobile 5G Postpaid">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="billCategory">
+                        <option value="Bills & Utilities">Bills & Utilities</option>
+                        <option value="Subscriptions">Subscriptions</option>
+                        <option value="Housing">Housing</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Amount (₹)</label>
+                    <input type="number" id="billAmount" step="0.01" min="1" required placeholder="999.00" value="799.00">
+                </div>
+                <div class="form-group">
+                    <label>Due Day of Month (1-31)</label>
+                    <input type="number" id="billDueDay" min="1" max="31" required placeholder="15" value="18">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeBillModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Schedule Bill</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- App Scripts -->
     <script src="js/dashboard.js"></script>
 </body>
 </html>

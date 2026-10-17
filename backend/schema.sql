@@ -80,6 +80,25 @@ CREATE TABLE IF NOT EXISTS vault_audit_logs (
 ) ENGINE=InnoDB;
 
 -- ------------------------------------------------------------------------
+-- Table 5: bills (Bills Radar & Recurring Obligations)
+-- ------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS bills (
+    bill_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    title VARCHAR(150) NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    amount DECIMAL(12, 2) NOT NULL,
+    due_day INT NOT NULL,
+    is_paid BOOLEAN NOT NULL DEFAULT FALSE,
+    is_recurring BOOLEAN NOT NULL DEFAULT TRUE,
+    biller_upi VARCHAR(100) DEFAULT 'billing@demo.upismart',
+    last_paid_at TIMESTAMP NULL DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_bill_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    INDEX idx_bill_user (user_id, due_day)
+) ENGINE=InnoDB;
+
+-- ------------------------------------------------------------------------
 -- Initial Seed Data for Academic Testing & Demonstration
 -- ------------------------------------------------------------------------
 INSERT INTO users (user_id, username, email, upi_handle, monthly_salary, security_pin_hash, biometrics_enabled)
@@ -89,3 +108,12 @@ ON DUPLICATE KEY UPDATE username=VALUES(username);
 INSERT INTO emergency_vault (vault_id, user_id, reserve_balance, is_locked, failed_attempts)
 VALUES (1, 1, 15000.00, FALSE, 0)
 ON DUPLICATE KEY UPDATE reserve_balance=VALUES(reserve_balance);
+
+INSERT INTO bills (bill_id, user_id, title, category, amount, due_day, is_paid, is_recurring)
+VALUES 
+    (1, 1, 'Fiber High-Speed Internet', 'Bills & Utilities', 1299.00, 5, FALSE, TRUE),
+    (2, 1, 'Electricity / Power Grid', 'Bills & Utilities', 2450.00, 12, FALSE, TRUE),
+    (3, 1, 'Cloud Storage & Streaming', 'Subscriptions', 799.00, 20, FALSE, TRUE),
+    (4, 1, 'Apartment Maintenance', 'Housing', 3500.00, 25, FALSE, TRUE)
+ON DUPLICATE KEY UPDATE title=VALUES(title);
+

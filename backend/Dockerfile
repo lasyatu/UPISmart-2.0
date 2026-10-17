@@ -1,5 +1,5 @@
 # =========================================================================
-# UPISmart 2.0 Backend — Multi-stage Dockerfile for Google Cloud Run
+# UPISmart 2.0 Backend — Multi-stage Dockerfile for AWS App Runner / ECS Fargate
 # =========================================================================
 
 # Stage 1: Build the Spring Boot application
@@ -24,7 +24,7 @@ USER upismart:upismart
 # Copy executable jar from builder stage
 COPY --from=builder /home/gradle/project/build/libs/upismart-backend-*.jar app.jar
 
-# Cloud Run defaults
+# Production Container Defaults
 ENV PORT=8080
 ENV SPRING_PROFILES_ACTIVE=prod
 EXPOSE 8080

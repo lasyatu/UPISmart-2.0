@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline — UPISmart 2.0</title>
+    <style>
+        body {
+            background-color: #0D0D14;
+            color: #F6F6FC;
+            font-family: system-ui, -apple-system, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 24px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .card {
+            background: #151520;
+            border: 1px solid #232135;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 440px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #C5FF65;
+        }
+        h2 {
+            margin: 0 0 12px;
+            font-size: 24px;
+            color: #F6F6FC;
+        }
+        p {
+            color: #9E9AA8;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        .btn {
+            background: #C5FF65;
+            color: #0D0D14;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="icon">⚡</div>
+        <h2>You're Currently Offline</h2>
+        <p>UPISmart 2.0 requires an active network connection to synchronize with the AWS cloud database. Real financial data is protected and never stored in unencrypted browser caches.</p>
+        <button class="btn" onclick="window.location.reload()">Check Connection Again</button>
+    </div>
+</body>
+</html>
