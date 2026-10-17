@@ -135,7 +135,25 @@ gradle :app:testDebugUnitTest
 
 ---
 
+## ☁️ Cloud Backend Deployment (AWS & Google Cloud)
+
+The `backend/` directory contains an academic **Spring Boot 3 (Java 17)** microservice supporting MySQL and cloud deployment:
+
+### 1. AWS Cloud Console Deployment
+- **AWS App Runner** (Serverless Container Runner)
+- **Amazon RDS for MySQL** (Managed MySQL 8.0)
+- **AWS Secrets Manager** (Secure credential injection)
+- See complete walkthrough: [`backend/AWS_DEPLOYMENT_GUIDE.md`](backend/AWS_DEPLOYMENT_GUIDE.md)
+- Automated deployment script: `backend/deploy-aws.sh`
+
+### 2. Google Cloud Deployment
+- **Google Cloud Run** + **Cloud SQL (MySQL 8.0)** + **Google Secret Manager**
+- Automated deployment script: `backend/deploy-cloud-run.sh`
+
+---
+
 ## 🔒 Security & Privacy Notice
 - **SIMULATED PAYMENT — NO REAL MONEY TRANSFERRED.**
 - UPISmart 2.0 is an educational and demo money OS. It is **not** connected to the National Payments Corporation of India (NPCI) or any commercial banking infrastructure.
 - The app never collects, stores, or transmits real UPI PINs, bank passwords, or debit card credentials.
+

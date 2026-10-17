@@ -3,14 +3,16 @@ spring:
     activate:
       on-profile: prod
   datasource:
-    # Production Cloud SQL MySQL connection string.
-    # Uses either Google Cloud SQL Socket Factory (when CLOUD_SQL_CONNECTION_NAME is set)
-    # or direct TCP connection (when DB_HOST is set).
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql:///${DB_NAME:upismart_db}?cloudSqlInstance=${CLOUD_SQL_CONNECTION_NAME:}&socketFactory=com.google.cloud.sql.mysql.SocketFactory&useSSL=false}
+    # Universal Production MySQL connection string:
+    # 1. AWS RDS / TCP: Set DB_HOST (and optionally DB_PORT, DB_NAME)
+    # 2. Google Cloud SQL: Set CLOUD_SQL_CONNECTION_NAME
+    # 3. Direct Override: Set SPRING_DATASOURCE_URL
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:upismart_db}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${DB_USER:upismart_user}
-    password: ${DB_PASS:}
+    username: ${DB_USER:${SPRING_DATASOURCE_USERNAME:upismart_user}}
+    password: ${DB_PASS:${SPRING_DATASOURCE_PASSWORD:}}
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     database-platform: org.hibernate.dialect.MySQLDialect
+
